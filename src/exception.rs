@@ -2,6 +2,22 @@
 
 use std::{fmt, ops::Deref};
 
+use rb_sys::{
+    rb_eArgError, rb_eEOFError, rb_eEncCompatError, rb_eEncodingError, rb_eException, rb_eFatal,
+    rb_eFloatDomainError, rb_eFrozenError, rb_eIOError, rb_eIndexError, rb_eInterrupt,
+    rb_eKeyError, rb_eLoadError, rb_eLocalJumpError, rb_eMathDomainError, rb_eNameError,
+    rb_eNoMemError, rb_eNoMethodError, rb_eNotImpError, rb_eRangeError, rb_eRegexpError,
+    rb_eRuntimeError, rb_eScriptError, rb_eSecurityError, rb_eSignal, rb_eStandardError,
+    rb_eStopIteration, rb_eSyntaxError, rb_eSysStackError, rb_eSystemCallError, rb_eSystemExit,
+    rb_eThreadError, rb_eTypeError, rb_eZeroDivError, VALUE,
+};
+
+#[cfg(ruby_gte_2_7)]
+use rb_sys::rb_eNoMatchingPatternError;
+
+#[cfg(ruby_gte_3_1)]
+use rb_sys::rb_eNoMatchingPatternKeyError;
+
 use crate::{
     class::RClass,
     debug_assert_value,
@@ -9,24 +25,8 @@ use crate::{
     module::Module,
     object::Object,
     r_array::RArray,
-    ruby_sys::{
-        rb_eArgError, rb_eEOFError, rb_eEncCompatError, rb_eEncodingError, rb_eException,
-        rb_eFatal, rb_eFloatDomainError, rb_eFrozenError, rb_eIOError, rb_eIndexError,
-        rb_eInterrupt, rb_eKeyError, rb_eLoadError, rb_eLocalJumpError, rb_eMathDomainError,
-        rb_eNameError, rb_eNoMemError, rb_eNoMethodError, rb_eNotImpError, rb_eRangeError,
-        rb_eRegexpError, rb_eRuntimeError, rb_eScriptError, rb_eSecurityError, rb_eSignal,
-        rb_eStandardError, rb_eStopIteration, rb_eSyntaxError, rb_eSysStackError,
-        rb_eSystemCallError, rb_eSystemExit, rb_eThreadError, rb_eTypeError, rb_eZeroDivError,
-        VALUE,
-    },
     value::{NonZeroValue, Value},
 };
-
-#[cfg(ruby_gte_2_7)]
-use crate::ruby_sys::rb_eNoMatchingPatternError;
-
-#[cfg(ruby_gte_3_1)]
-use crate::ruby_sys::rb_eNoMatchingPatternKeyError;
 
 /// Wrapper type for a Value known to be an instance of Ruby's Exception class.
 ///

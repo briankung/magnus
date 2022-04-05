@@ -8,13 +8,14 @@ use std::{
     os::raw::{c_int, c_long},
 };
 
+use rb_sys::{rb_range_beg_len, rb_range_new};
+
 use crate::{
     class,
     error::{protect, Error},
     exception,
     object::Object,
     r_struct::RStruct,
-    ruby_sys::{rb_range_beg_len, rb_range_new},
     try_convert::TryConvert,
     value::{Value, QNIL},
 };

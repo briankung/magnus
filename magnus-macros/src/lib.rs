@@ -327,7 +327,7 @@ pub fn derive_typed_data(input: TokenStream) -> TokenStream {
     let class = attrs.class;
     let name = attrs.name.unwrap_or_else(|| class.clone());
     let mut builder = Vec::new();
-    builder.push(quote! { let mut builder = magnus::DataType::builder::<Self>(#name); });
+    builder.push(quote! { let mut builder = magnus::DataTypeBuilder::<Self>::new(#name); });
     if attrs.mark.is_some() {
         builder.push(quote! { builder.mark(); });
     }

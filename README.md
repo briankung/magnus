@@ -370,14 +370,10 @@ fn example(s: RString) -> Result<(), Error> {
 
 ## Compatibility
 
-Magnus contains pre-built bindings for Ruby 2.6 through 3.1 on Linux x86_64,
-macOS x86_64, macOS aarch64, and Windows x86_64.
-For other Ruby version/platform combinations bindings will be generated at
-compile time, this may require libclang to be installed.
+Magnus is tested against Ruby 2.6 through 3.1 on Linux x86_64, macOS x86_64,
+macOS aarch64, and Windows x86_64.
 
-The Minimum supported Rust version is currently Rust 1.51.
-
-Support for statically linking Ruby is provided, but not tested.
+The Minimum supported Rust version is currently Rust 1.56.
 
 Support for 32 bit systems is almost certainly broken, patches are welcome.
 

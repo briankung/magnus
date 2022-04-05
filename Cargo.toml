@@ -4,7 +4,6 @@ version = "0.2.1"
 authors = ["Mat Sadler <mat@sourcetagsandcodes.com>"]
 edition = "2018"
 description = "High level Ruby bindings for Rust."
-links = "ruby"
 keywords = ["ruby"]
 categories = ["api-bindings", "development-tools::ffi"]
 repository = "https://github.com/matsadler/magnus"
@@ -18,13 +17,11 @@ members = ["magnus-macros"]
 exclude = ["examples/rust_blank/ext/rust_blank"]
 
 [features]
-embed = []
+embed = ["rb-sys/link-ruby"]
 
 [dependencies]
 magnus-macros = { version = "0.1.0", path = "magnus-macros" }
-
-[build-dependencies]
-bindgen = "0.59"
+rb-sys = { path = "../rb-sys/crates/rb-sys" }
 
 [dev-dependencies]
 magnus = { path = ".", features = ["embed"] }

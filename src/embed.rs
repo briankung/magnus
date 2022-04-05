@@ -5,12 +5,10 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
 };
 
-use crate::ruby_sys::{
-    ruby_cleanup, ruby_exec_node, ruby_executable_node, ruby_options, ruby_setup,
-};
+use rb_sys::{ruby_cleanup, ruby_exec_node, ruby_executable_node, ruby_options, ruby_setup};
 
 #[cfg(windows)]
-use crate::ruby_sys::rb_w32_sysinit;
+use rb_sys::rb_w32_sysinit;
 
 /// A guard value that will run the cleanup function for the Ruby VM when
 /// dropped.

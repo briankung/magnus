@@ -1,11 +1,12 @@
 use std::{fmt, ops::Deref};
 
+use rb_sys::VALUE;
+
 use crate::{
     class,
     error::Error,
     exception,
     object::Object,
-    ruby_sys::VALUE,
     try_convert::TryConvert,
     value::{NonZeroValue, Value},
 };

@@ -12,30 +12,29 @@ use std::{
     ptr::{self, NonNull},
 };
 
+use rb_sys::{
+    self, rb_check_typeddata, rb_data_type_struct__bindgen_ty_1, rb_data_type_t,
+    rb_data_typed_object_wrap, ruby_value_type, size_t, VALUE,
+};
+
+#[cfg(ruby_gte_3_0)]
+use rb_sys::rbimpl_typeddata_flags::{self, RUBY_TYPED_FREE_IMMEDIATELY, RUBY_TYPED_WB_PROTECTED};
+
 use crate::{
     class::RClass,
     debug_assert_value,
     error::{protect, Error},
     exception,
     object::Object,
-    ruby_sys::{
-        self, rb_check_typeddata, rb_data_type_struct__bindgen_ty_1, rb_data_type_t,
-        rb_data_typed_object_wrap, ruby_value_type, size_t, VALUE,
-    },
     try_convert::TryConvert,
     value::{NonZeroValue, Value, QNIL},
-};
-
-#[cfg(ruby_gte_3_0)]
-use crate::ruby_sys::rbimpl_typeddata_flags::{
-    self, RUBY_TYPED_FREE_IMMEDIATELY, RUBY_TYPED_WB_PROTECTED,
 };
 
 #[cfg(ruby_lt_3_0)]
 const RUBY_TYPED_FREE_IMMEDIATELY: u32 = 1;
 
 #[cfg(ruby_lt_3_0)]
-const RUBY_TYPED_WB_PROTECTED: u32 = crate::ruby_sys::ruby_fl_type::RUBY_FL_WB_PROTECTED as u32;
+const RUBY_TYPED_WB_PROTECTED: u32 = rb_sys::ruby_fl_type::RUBY_FL_WB_PROTECTED as u32;
 
 /// A Value pointer to a RTypedData struct, Ruby’s internal representation of
 /// objects that wrap foreign types.
@@ -52,7 +51,7 @@ impl RTypedData {
     pub fn from_value(val: Value) -> Option<Self> {
         unsafe {
             (val.rb_type() == ruby_value_type::RUBY_T_DATA)
-                .then(|| NonNull::new_unchecked(val.as_rb_value() as *mut ruby_sys::RTypedData))
+                .then(|| NonNull::new_unchecked(val.as_rb_value() as *mut rb_sys::RTypedData))
                 .and_then(|typed_data| {
                     (typed_data.as_ref().typed_flag == 1)
                         .then(|| Self(NonZeroValue::new_unchecked(val)))
@@ -92,27 +91,6 @@ impl Object for RTypedData {}
 /// A C struct containing metadata on a Rust type, for use with the
 /// `rb_data_typed_object_wrap` API.
 pub type DataType = rb_data_type_t;
-
-impl DataType {
-    /// Create a new `DataTypeBuilder`.
-    ///
-    /// `name` should be unique per wrapped type. It does not need to be a
-    /// valid Ruby identifier.
-    pub fn builder<T>(name: &'static str) -> DataTypeBuilder<T>
-    where
-        T: DataTypeFunctions,
-    {
-        DataTypeBuilder::new(name)
-    }
-}
-
-impl Drop for DataType {
-    fn drop(&mut self) {
-        unsafe {
-            drop(CString::from_raw(self.wrap_struct_name as *mut _));
-        }
-    }
-}
 
 /// A helper trait used to define functions associated with a [`DataType`].
 pub trait DataTypeFunctions

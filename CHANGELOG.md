@@ -4,10 +4,12 @@
 ### Added
 
 ### Changed
+- Switched to rb-sys for low level Ruby bindings.
 
 ### Deprecated
 
 ### Removed
+- Pre-built bindings for common platforms.
 
 ### Fixed
 

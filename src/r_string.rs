@@ -11,26 +11,27 @@ use std::{
     slice, str,
 };
 
+use rb_sys::{
+    self, rb_enc_associate_index, rb_enc_get, rb_enc_get_index, rb_str_buf_append, rb_str_buf_new,
+    rb_str_cat, rb_str_conv_enc, rb_str_new, rb_str_to_str, rb_usascii_encindex, rb_utf8_encindex,
+    rb_utf8_encoding, rb_utf8_str_new, rb_utf8_str_new_static, ruby_rstring_flags, ruby_value_type,
+    VALUE,
+};
+
+#[cfg(ruby_gte_3_0)]
+use rb_sys::{rb_str_to_interned_str, ruby_rstring_consts::RSTRING_EMBED_LEN_SHIFT};
+
+#[cfg(ruby_lt_3_0)]
+use rb_sys::ruby_rstring_flags::RSTRING_EMBED_LEN_SHIFT;
+
 use crate::{
     debug_assert_value,
     error::{protect, Error},
     exception,
     object::Object,
-    ruby_sys::{
-        self, rb_enc_associate_index, rb_enc_get, rb_enc_get_index, rb_str_buf_append,
-        rb_str_buf_new, rb_str_cat, rb_str_conv_enc, rb_str_new, rb_str_to_str,
-        rb_usascii_encindex, rb_utf8_encindex, rb_utf8_encoding, rb_utf8_str_new,
-        rb_utf8_str_new_static, ruby_rstring_flags, ruby_value_type, VALUE,
-    },
     try_convert::TryConvert,
     value::{NonZeroValue, Value},
 };
-
-#[cfg(ruby_gte_3_0)]
-use crate::ruby_sys::{rb_str_to_interned_str, ruby_rstring_consts::RSTRING_EMBED_LEN_SHIFT};
-
-#[cfg(ruby_lt_3_0)]
-use crate::ruby_sys::ruby_rstring_flags::RSTRING_EMBED_LEN_SHIFT;
 
 /// A Value pointer to a RString struct, Ruby's internal representation of
 /// strings.
@@ -73,7 +74,7 @@ impl RString {
         Self(NonZeroValue::new_unchecked(Value::new(val)))
     }
 
-    fn as_internal(self) -> NonNull<ruby_sys::RString> {
+    fn as_internal(self) -> NonNull<rb_sys::RString> {
         // safe as inner value is NonZero
         unsafe { NonNull::new_unchecked(self.0.get().as_rb_value() as *mut _) }
     }
